@@ -1,0 +1,73 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.5.2.RELEASE")
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+apply plugin: 'org.springframework.boot'
+
+jar {
+    baseName = 'acme-invoice'
+    version =  '0.1.0'
+}
+
+repositories {
+    mavenCentral()
+}
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+sourceSets {
+    integrationTests {
+        java.srcDir file('src/test/java/integration')
+        resources.srcDir file('src/test/resources')
+    }
+
+    unitTests {
+        java.srcDir file('src/test/java/unit')
+        resources.srcDir file('src/test/resources')
+    }
+}
+
+dependencies {
+    compile("org.springframework.boot:spring-boot-starter-web")
+    compile("org.springframework.boot:spring-boot-starter-data-jpa")
+    compile "org.projectlombok:lombok:1.16.16"
+    compile 'com.google.guava:guava:21.0'
+    testCompile('org.springframework.boot:spring-boot-starter-test')
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '3.4.1'
+}
+
+task integrationTests(type: Test) {
+    doFirst{ tasks.startMongo.execute() }
+    testClassesDir = sourceSets.integrationTests.output.classesDir
+    classpath = sourceSets.integrationTests.runtimeClasspath
+    doLast{ tasks.stopMongo.execute() }
+}
+
+task unitTests(type: Test) {
+    testClassesDir = sourceSets.unitTests.output.classesDir
+    classpath = sourceSets.unitTests.runtimeClasspath
+}
+
+task runMongo(type: Exec) {
+    commandLine 'docker', 'run', '-d', '-p', '27018:27017', '--name', 'mongo_test', 'mongo:3.2'
+}
+
+task startMongo(type: Exec, dependsOn: 'stopMongo') {
+    commandLine 'docker', 'start', 'mongo_test'
+}
+
+task stopMongo(type: Exec) {
+    commandLine 'docker', 'stop', 'mongo_test'
+}
