@@ -1,0 +1,17 @@
+version: '2'
+services:
+  db:
+    container_name: postgres
+    build: ./db/
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_PASSWORD=vandebron
+
+  deploy:
+    container_name: tomcat
+    build: .
+    ports:
+      - "9000:9000"
+    links:
+      - db:postgres
