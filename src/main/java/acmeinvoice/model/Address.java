@@ -1,8 +1,6 @@
 package acmeinvoice.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
 
 import javax.persistence.Entity;
@@ -20,10 +18,10 @@ public class Address {
     @GeneratedValue(strategy = AUTO)
     private Long id;
     private String city;
-    private String number;
+    private String state;
     private String country;
     @ManyToOne
-    @JoinColumn(name = "customer_id", nullable = false)
-    @JsonIgnore
+    @JoinColumn(name = "customer_id")
+    @JsonBackReference
     private Customer customer;
 }
