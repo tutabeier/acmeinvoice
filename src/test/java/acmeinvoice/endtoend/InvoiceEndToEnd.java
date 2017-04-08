@@ -87,6 +87,8 @@ public class InvoiceEndToEnd {
         .when()
             .post("/v1.0/invoices/")
         .then()
-            .statusCode(CREATED.value());
+            .statusCode(CREATED.value())
+            .body("[0].name", Matchers.is("Person One"))
+            .body("[1].name", Matchers.is("Person Two"));
     }
 }
