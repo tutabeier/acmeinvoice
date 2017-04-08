@@ -6,7 +6,8 @@ services:
   - docker
 
 before_install:
-  - ./gradlew runPostgres
+  - docker build -t postgres-acme db
+  - docker run --name acme-invoice-test -p 5433:5432 -e POSTGRES_PASSWORD=password -d postgres-acme
 
 script:
   - ./gradlew unitTests
