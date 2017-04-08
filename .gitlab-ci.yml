@@ -1,0 +1,11 @@
+before_script:
+  - apt-get update -qq && apt-get install -y -qq docker default-jdk
+
+postgres:
+  script:
+    - docker build -t postgres-acme db
+    - docker run -p 5433:5432 -e POSTGRES_PASSWORD=vandebron -d postgres-acme
+
+gradle:
+  script:
+    - ./gradlew test
