@@ -1,6 +1,5 @@
 package acmeinvoice.controller;
 
-import acmeinvoice.model.Invoice;
 import acmeinvoice.model.InvoiceResponse;
 import acmeinvoice.service.InvoiceService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,14 +24,15 @@ public class InvoiceController {
     private InvoiceService service;
 
     @RequestMapping(method = GET)
-    public ResponseEntity findBy(@RequestParam(value = "customerId", required = false) Long customerId) {
-        List<InvoiceResponse> invoices = service.findBy(customerId);
+    public ResponseEntity findBy(@RequestParam(required = false) Long customerId,
+                                 @RequestParam(required = false) Long addressId) {
+        List<InvoiceResponse> invoices = service.findBy(customerId, addressId);
         return new ResponseEntity(invoices, OK);
     }
 
     @RequestMapping(method = POST)
-    public ResponseEntity create(@RequestBody Invoice invoice) {
-        Invoice invoiceSaved = service.save(invoice);
+    public ResponseEntity create(@RequestBody InvoiceResponse invoiceResponse) {
+        InvoiceResponse invoiceSaved = service.save(invoiceResponse);
         return new ResponseEntity(invoiceSaved, CREATED);
     }
 }

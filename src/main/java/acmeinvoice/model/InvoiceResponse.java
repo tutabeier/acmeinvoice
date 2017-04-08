@@ -1,55 +1,25 @@
 package acmeinvoice.model;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.Locale;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY;
-import static java.time.format.DateTimeFormatter.ofPattern;
-import static java.util.Locale.getDefault;
 
 @JsonAutoDetect(fieldVisibility = ANY)
-public class InvoiceResponse {
-    private String customerId;
-    private String addressId;
-    private String invoiceId;
-    private String invoiceType;
-    private String invoiceTypeLocalized;
-    private LocalDate invoiceDate;
-    private LocalDate paymentDueDate;
-    private String invoiceNumber;
-    private LocalDate startDate;
-    private LocalDate endDate;
-    private String periodDescription;
-    private float amount;
-    private float vatAmount;
-    private float totalAmount;
+@Data
+@AllArgsConstructor
+public class InvoiceResponse extends Invoice {
+    private long customerId;
+    private long addressId;
+    private long invoiceId;
 
-    public InvoiceResponse(String customerId, String addressId, String invoiceId, String invoiceType, String invoiceTypeLocalized, LocalDate invoiceDate, LocalDate paymentDueDate, String invoiceNumber, LocalDate startDate, LocalDate endDate, float amount, float vatAmount) {
+    public InvoiceResponse(long customerId, long addressId, long invoiceId, String invoiceType, String invoiceTypeLocalized, LocalDate invoiceDate, LocalDate paymentDueDate, String invoiceNumber, LocalDate startDate, LocalDate endDate, float amount, float vatAmount) {
+        super(invoiceType, invoiceTypeLocalized, invoiceDate, paymentDueDate, invoiceNumber, startDate, endDate, amount, vatAmount);
         this.customerId = customerId;
         this.addressId = addressId;
         this.invoiceId = invoiceId;
-        this.invoiceType = invoiceType;
-        this.invoiceTypeLocalized = invoiceTypeLocalized;
-        this.invoiceDate = invoiceDate;
-        this.paymentDueDate = paymentDueDate;
-        this.invoiceNumber = invoiceNumber;
-        this.startDate = startDate;
-        this.endDate = endDate;
-        this.periodDescription = formatPeriodDescription(startDate);
-        this.amount = amount;
-        this.vatAmount = vatAmount;
-        this.totalAmount = totalAmount(amount, vatAmount);
-    }
-
-    private float totalAmount(float amount, float vatAmount) {
-        return amount + vatAmount;
-    }
-
-    private String formatPeriodDescription(LocalDate startDate) {
-        DateTimeFormatter formatter = ofPattern("MMMM yyyy", getDefault());
-        return startDate.format(formatter);
     }
 }

@@ -15,6 +15,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultMatcher;
 
+import static acmeinvoice.common.JsonUtil.toJson;
 import static com.google.common.collect.Lists.newArrayList;
 import static java.time.LocalDate.parse;
 import static org.hamcrest.Matchers.is;
@@ -22,6 +23,7 @@ import static org.hamcrest.core.StringContains.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -48,22 +50,22 @@ public class InvoiceControllerTest {
 
     @Test
     public void shouldFindAllInvoicesByCustomer() throws Exception {
-        when(service.findBy(01L)).thenReturn(newArrayList(invoiceResponseOne, invoiceResponseTwo));
+        when(service.findBy(01L, 02L)).thenReturn(newArrayList(invoiceResponseOne, invoiceResponseTwo));
 
-        mockMvc.perform(get("/v1.0/invoices/?customerId=01")
+        mockMvc.perform(get("/v1.0/invoices/?customerId=01&addressId=02")
                 .contentType(APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].customerId", is("01")))
-                .andExpect(jsonPath("$[0].addressId", is("02")))
-                .andExpect(jsonPath("$[0].invoiceId", is("03")))
+                .andExpect(jsonPath("$[0].customerId", is(01)))
+                .andExpect(jsonPath("$[0].addressId", is(02)))
+                .andExpect(jsonPath("$[0].invoiceId", is(03)))
                 .andExpect(jsonPath("$[0].invoiceType", is("AdvancePayment")))
                 .andExpect(jsonPath("$[0].invoiceTypeLocalized", is("Voorschot")))
                 .andExpect(jsonPath("$[0].invoiceNumber", is("157005888")))
                 .andExpect(jsonPath("$[0].periodDescription", is("March 2015")))
                 .andExpect(jsonPath("$[0].totalAmount", is(200.0)))
-                .andExpect(jsonPath("$[1].customerId", is("01")))
-                .andExpect(jsonPath("$[1].addressId", is("02")))
-                .andExpect(jsonPath("$[1].invoiceId", is("04")))
+                .andExpect(jsonPath("$[1].customerId", is(01)))
+                .andExpect(jsonPath("$[1].addressId", is(02)))
+                .andExpect(jsonPath("$[1].invoiceId", is(04)))
                 .andExpect(jsonPath("$[1].invoiceType", is("ShopPurchase")))
                 .andExpect(jsonPath("$[1].invoiceTypeLocalized", is("Winkel aankoop")))
                 .andExpect(jsonPath("$[1].invoiceNumber", is("1429564")))
@@ -71,11 +73,18 @@ public class InvoiceControllerTest {
                 .andExpect(jsonPath("$[1].totalAmount", is(200.0)));
     }
 
+    @Test
+    public void shouldCreateInvoiceBasedOnInvoiceResponse() throws Exception {
+        mockMvc.perform(post("/v1.0/invoices/")
+                .content(toJson(invoiceResponseOne)).contentType(APPLICATION_JSON))
+                .andExpect(status().isCreated());
+    }
+
     private void setInvoiceResponses() {
-        invoiceResponseOne = new InvoiceResponse("01", "02", "03",
+        invoiceResponseOne = new InvoiceResponse(01L, 02L, 03L,
                 "AdvancePayment", "Voorschot", parse("2015-02-13"), parse("2015-02-20"),
                 "157005888", parse("2015-03-01"), parse("2015-04-01"),  165.29F, 34.71F);
-        invoiceResponseTwo = new InvoiceResponse("01", "02", "04",
+        invoiceResponseTwo = new InvoiceResponse(01L, 02L, 04L,
                 "ShopPurchase", "Winkel aankoop", parse("2015-02-13"), parse("2015-02-20"),
                 "1429564", parse("2014-12-01"), parse("2015-01-01"),  165.29F, 34.71F);
     }
