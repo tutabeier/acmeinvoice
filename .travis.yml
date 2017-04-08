@@ -5,6 +5,9 @@ language: java
 services:
   - docker
 
+before_install:
+  - ./gradlew runPostgres
+
 script:
   - ./gradlew unitTests
   - ./gradlew integrationTests
