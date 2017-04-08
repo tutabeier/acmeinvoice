@@ -1,11 +1,18 @@
-before_script:
-  - apt-get update -qq && apt-get install -y -qq docker default-jdk
+image: gitlab/dind
 
-postgres:
+stages:
+  - test
+
+before_script:
+  - echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | debconf-set-selections
+  - apt-get update
+  - apt-get install -y docker
+  - add-apt-repository -y ppa:webupd8team/java
+  - apt-get update
+  - apt-get install -y oracle-java8-installer
+
+test:
   script:
     - docker build -t postgres-acme db
     - docker run -p 5433:5432 -e POSTGRES_PASSWORD=vandebron -d postgres-acme
-
-gradle:
-  script:
     - ./gradlew test
