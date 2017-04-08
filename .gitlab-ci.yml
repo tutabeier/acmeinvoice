@@ -17,7 +17,6 @@ after_script:
 
 test:
   script:
-    - docker stop acme-invoice-test
     - docker build -t postgres-acme db
     - docker --name acme-invoice-test run -p 5433:5432 -e POSTGRES_PASSWORD=vandebron -d postgres-acme
     - ./gradlew test
