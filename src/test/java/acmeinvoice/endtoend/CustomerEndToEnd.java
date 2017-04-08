@@ -38,6 +38,8 @@ public class CustomerEndToEnd {
     public void setUp() {
         RestAssured.port = serverPort;
 
+        customerOne = new Customer();
+        customerOne.setName("Person One");
         Address addressOne = new Address();
         addressOne.setCity("Porto Alegre");
         addressOne.setState("Rio Grande do Sul");
@@ -46,18 +48,16 @@ public class CustomerEndToEnd {
         addressTwo.setCity("São Paulo");
         addressTwo.setState("São Paulo");
         addressTwo.setCountry("Brazil");
-        customerOne = new Customer();
-        customerOne.setName("Person One");
-        customerOne.setAddresses(newArrayList(addressOne, addressTwo));
+        addressTwo.setCustomer(customerOne);
 
 
+        customerTwo = new Customer();
+        customerTwo.setName("Person Two");
         Address addressThree = new Address();
         addressThree.setCity("Rio de Janeiro");
         addressThree.setState("Rio de Janeiro");
         addressThree.setCountry("Brazil");
-        customerTwo = new Customer();
-        customerTwo.setName("Person Two");
-        customerTwo.setAddresses(newArrayList(addressThree));
+        addressThree.setCustomer(customerTwo);
     }
 
     @Test
@@ -69,13 +69,7 @@ public class CustomerEndToEnd {
             .post("/v1.0/customers")
         .then()
             .statusCode(CREATED.value())
-            .body("name", is("Person One"))
-            .body("addresses[0].city", is("Porto Alegre"))
-            .body("addresses[0].state", is("Rio Grande do Sul"))
-            .body("addresses[0].country", is("Brazil"))
-            .body("addresses[1].city", is("São Paulo"))
-            .body("addresses[1].state", is("São Paulo"))
-            .body("addresses[1].country", is("Brazil"));
+            .body("name", is("Person One"));
 
         given()
             .body(toJson(customerTwo))
@@ -84,25 +78,13 @@ public class CustomerEndToEnd {
             .post("/v1.0/customers")
         .then()
             .statusCode(CREATED.value())
-            .body("name", is("Person Two"))
-            .body("addresses[0].city", is("Rio de Janeiro"))
-            .body("addresses[0].state", is("Rio de Janeiro"))
-            .body("addresses[0].country", is("Brazil"));
+            .body("name", is("Person Two"));
 
         when()
             .get("/v1.0/customers")
         .then()
             .statusCode(OK.value())
             .body("[0].name", is("Person One"))
-            .body("[0].addresses[0].city", is("Porto Alegre"))
-            .body("[0].addresses[0].state", is("Rio Grande do Sul"))
-            .body("[0].addresses[0].country", is("Brazil"))
-            .body("[0].addresses[1].city", is("São Paulo"))
-            .body("[0].addresses[1].state", is("São Paulo"))
-            .body("[0].addresses[1].country", is("Brazil"))
-            .body("[1].name", is("Person Two"))
-            .body("[1].addresses[0].city", is("Rio de Janeiro"))
-            .body("[1].addresses[0].state", is("Rio de Janeiro"))
-            .body("[1].addresses[0].country", is("Brazil"));
+            .body("[1].name", is("Person Two"));
     }
 }

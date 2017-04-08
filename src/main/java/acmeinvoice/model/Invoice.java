@@ -25,16 +25,10 @@ public class Invoice {
     private Long id;
 
     @JoinColumn(name = "customer_id")
-    @OneToOne(targetEntity = Customer.class, cascade = ALL)
+    @OneToOne(targetEntity = Customer.class)
     private Customer customer;
 
-
     @JoinColumn(name = "address_id")
-    @OneToOne(targetEntity = Address.class, cascade = ALL)
+    @OneToOne(targetEntity = Address.class)
     private Address address;
-
-//    @Column(name = "id_customer", insertable = false, updatable = false)
-//    private Long customerId;
-//    @Column(name = "id_address", insertable = false, updatable = false)
-//    private Long addressId;
 }

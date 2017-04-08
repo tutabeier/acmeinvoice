@@ -1,13 +1,13 @@
 package acmeinvoice.controller;
 
-import acmeinvoice.model.Invoice;
-import acmeinvoice.model.InvoiceResponse;
-import acmeinvoice.service.InvoiceService;
+import acmeinvoice.model.Address;
+import acmeinvoice.model.Customer;
+import acmeinvoice.repository.AddressRepository;
+import acmeinvoice.repository.CustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -18,21 +18,20 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 @RestController
-@RequestMapping(value = "/v1.0/invoices/")
-public class InvoiceController {
-
+@RequestMapping("/v1.0/address")
+public class AddressController {
     @Autowired
-    private InvoiceService service;
+    private AddressRepository repository;
 
     @RequestMapping(method = GET)
-    public ResponseEntity findBy(@RequestParam(value = "customerId", required = false) Long customerId) {
-        List<InvoiceResponse> invoices = service.findBy(customerId);
-        return new ResponseEntity(invoices, OK);
+    public ResponseEntity findAll() {
+        List<Address> addresses = repository.findAll();
+        return new ResponseEntity(addresses, OK);
     }
 
     @RequestMapping(method = POST)
-    public ResponseEntity create(@RequestBody Invoice invoice) {
-        Invoice invoiceSaved = service.save(invoice);
-        return new ResponseEntity(invoiceSaved, CREATED);
+    public ResponseEntity create(@RequestBody Address address) {
+        Address addressSaved = repository.save(address);
+        return new ResponseEntity(addressSaved, CREATED);
     }
 }

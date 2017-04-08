@@ -19,14 +19,4 @@ public class Customer {
     @GeneratedValue(strategy = AUTO)
     private Long id;
     private String name;
-    @OneToMany(mappedBy = "customer", cascade = ALL)
-    @JsonManagedReference
-    private List<Address> addresses;
-
-    public void setAddresses(List<Address> addresses) {
-        for (Address child : addresses) {
-            child.setCustomer(this);
-        }
-        this.addresses = addresses;
-    }
 }

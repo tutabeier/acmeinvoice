@@ -7,6 +7,7 @@ import acmeinvoice.model.Invoice;
 import acmeinvoice.repository.InvoiceRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.jayway.restassured.RestAssured;
+import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,35 +37,56 @@ public class InvoiceEndToEnd {
     @Value("${server.port}")
     private int serverPort;
     private Invoice invoice;
+    private Customer customer;
+    private Address address;
 
     @Before
     public void setUp() {
-//        RestAssured.port = serverPort;
-//        Address address = new Address();
-//        address.setCity("Porto Alegre");
-//        address.setCountry("Brazil");
-//        address.setNumber("600");
-//        Customer customer = new Customer();
-//        customer.setName("Lucas Falk Beier");
-////        customer.setAddresses(newArrayList(address));
-//        invoice = new Invoice();
-//        invoice.setCustomer(customer);
-//        invoice.setAddress(address);
+        RestAssured.port = serverPort;
+        customer = new Customer();
+        customer.setName("Lucas Falk Beier");
+        address = new Address();
+        address.setCity("Porto Alegre");
+        address.setCountry("Brazil");
+        address.setState("Rio Grande do Sul");
+        address.setCustomer(customer);
+        invoice = new Invoice();
+        invoice.setCustomer(customer);
+        invoice.setAddress(address);
     }
 
     @Test
     public void shouldSaveAndFetchAddress() throws JsonProcessingException {
-//        given()
-//                .body(toJson(invoice))
-//                .contentType(JSON)
-//                .when()
-//                .post("/v1.0/customers")
-//                .then()
-//                .statusCode(CREATED.value());
-//
-//        when()
-//                .get("/v1.0/customers")
-//                .then()
-//                .statusCode(OK.value());
+        int customerId =
+            given().
+                    body(toJson(customer)).
+                    contentType(JSON).
+            when().
+                    post("/v1.0/customers").
+            then().
+                    statusCode(CREATED.value()).
+            extract().
+                    path("id");
+        customer.setId((long) customerId);
+
+        int addressId =
+            given().
+                    body(toJson(address)).
+                    contentType(JSON).
+            when().
+                    post("/v1.0/address").
+            then().
+                    statusCode(CREATED.value()).
+            extract().
+                    path("id");
+        address.setId((long) addressId);
+
+        given()
+            .body(toJson(invoice))
+            .contentType(JSON)
+        .when()
+            .post("/v1.0/invoices/")
+        .then()
+            .statusCode(CREATED.value());
     }
 }
