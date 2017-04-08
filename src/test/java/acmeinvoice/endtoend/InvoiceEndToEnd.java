@@ -80,25 +80,25 @@ public class InvoiceEndToEnd {
 
         int addressIdOne =
                 given().
-                        body(toJson(addressOne)).
-                        contentType(JSON).
-                        when().
-                        post("/v1.0/address").
-                        then().
-                        statusCode(CREATED.value()).
-                        extract().
-                        path("id");
+                    body(toJson(addressOne)).
+                    contentType(JSON).
+                when().
+                    post("/v1.0/address").
+                then().
+                    statusCode(CREATED.value()).
+                extract().
+                    path("id");
 
         int addressIdTwo =
                 given().
-                        body(toJson(addressOne)).
-                        contentType(JSON).
-                        when().
-                        post("/v1.0/address").
-                        then().
-                        statusCode(CREATED.value()).
-                        extract().
-                        path("id");
+                    body(toJson(addressOne)).
+                    contentType(JSON).
+                when().
+                    post("/v1.0/address").
+                then().
+                    statusCode(CREATED.value()).
+                extract().
+                    path("id");
 
         invoiceResponseOne.setCustomerId(customerId);
         invoiceResponseOne.setAddressId(addressIdOne);
@@ -108,37 +108,37 @@ public class InvoiceEndToEnd {
         invoiceResponseThree.setAddressId(addressIdTwo);
 
         given()
-                .body(toJson(invoiceResponseOne))
-                .contentType(JSON)
-                .when()
-                .post("/v1.0/invoices/")
-                .then()
-                .statusCode(CREATED.value());
+            .body(toJson(invoiceResponseOne))
+            .contentType(JSON)
+        .when()
+            .post("/v1.0/invoices/")
+        .then()
+            .statusCode(CREATED.value());
 
         given()
-                .body(toJson(invoiceResponseTwo))
-                .contentType(JSON)
-                .when()
-                .post("/v1.0/invoices/")
-                .then()
-                .statusCode(CREATED.value());
+            .body(toJson(invoiceResponseTwo))
+            .contentType(JSON)
+        .when()
+            .post("/v1.0/invoices/")
+        .then()
+            .statusCode(CREATED.value());
 
         given()
-                .body(toJson(invoiceResponseThree))
-                .contentType(JSON)
-                .when()
-                .post("/v1.0/invoices/")
-                .then()
-                .statusCode(CREATED.value());
+            .body(toJson(invoiceResponseThree))
+            .contentType(JSON)
+        .when()
+            .post("/v1.0/invoices/")
+        .then()
+            .statusCode(CREATED.value());
 
         when()
-                .get("/v1.0/invoices/?customerId=" + customerId)
-                .then()
-                .statusCode(OK.value())
-                .body("[0].invoiceNumber", is("157005888"))
-                .body("[1].invoiceNumber", is("1429564"))
-                .body("[2].invoiceNumber", is("1429565"))
-                .body("list.size()", is(3));
+            .get("/v1.0/invoices/?customerId=" + customerId)
+        .then()
+            .statusCode(OK.value())
+            .body("[0].invoiceNumber", is("157005888"))
+            .body("[1].invoiceNumber", is("1429564"))
+            .body("[2].invoiceNumber", is("1429565"))
+            .body("list.size()", is(3));
     }
 
     @Test
