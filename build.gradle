@@ -25,13 +25,18 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 sourceSets {
-    integrationTests {
-        java.srcDir file('src/test/java/integration')
+    unitTests {
+        java.srcDir file('src/test/java/acmeinvoice/unit')
         resources.srcDir file('src/test/resources')
     }
 
-    unitTests {
-        java.srcDir file('src/test/java/unit')
+    integrationTests {
+        java.srcDir file('src/test/java/acmeinvoice/integration')
+        resources.srcDir file('src/test/resources')
+    }
+
+    endToEndTests {
+        java.srcDir file('src/test/java/acmeinvoice/endtoend')
         resources.srcDir file('src/test/resources')
     }
 }
@@ -48,17 +53,25 @@ dependencies {
     compile 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.9.0.pr2'
 
     testCompile 'org.springframework.boot:spring-boot-starter-test'
+
+    unitTestsCompile sourceSets.main.output
+    unitTestsCompile configurations.testCompile
+    unitTestsCompile sourceSets.test.output
+    unitTestsCompile configurations.testRuntime
+
+    integrationTestsCompile sourceSets.main.output
+    integrationTestsCompile configurations.testCompile
+    integrationTestsCompile sourceSets.test.output
+    integrationTestsRuntime configurations.testRuntime
+
+    endToEndTestsCompile sourceSets.main.output
+    endToEndTestsCompile configurations.testCompile
+    endToEndTestsCompile sourceSets.test.output
+    endToEndTestsCompile configurations.testRuntime
 }
 
 task wrapper(type: Wrapper) {
     gradleVersion = '3.4.1'
-}
-
-task integrationTests(type: Test) {
-    doFirst{ tasks.startMongo.execute() }
-    testClassesDir = sourceSets.integrationTests.output.classesDir
-    classpath = sourceSets.integrationTests.runtimeClasspath
-    doLast{ tasks.stopMongo.execute() }
 }
 
 task unitTests(type: Test) {
@@ -66,14 +79,29 @@ task unitTests(type: Test) {
     classpath = sourceSets.unitTests.runtimeClasspath
 }
 
-task runMongo(type: Exec) {
-    commandLine 'docker', 'run', '-d', '-p', '27018:27017', '--name', 'mongo_test', 'mongo:3.2'
+task integrationTests(type: Test) {
+    doFirst{ tasks.startPostgres.execute() }
+    testClassesDir = sourceSets.integrationTests.output.classesDir
+    classpath = sourceSets.integrationTests.runtimeClasspath
+    doLast{ tasks.stopPosgres.execute() }
 }
 
-task startMongo(type: Exec, dependsOn: 'stopMongo') {
-    commandLine 'docker', 'start', 'mongo_test'
+task endToEndTests(type: Test) {
+    doFirst{ tasks.startPostgres.execute() }
+    testClassesDir = sourceSets.endToEndTests.output.classesDir
+    classpath = sourceSets.endToEndTests.runtimeClasspath
+    doLast{ tasks.stopPosgres.execute() }
 }
 
-task stopMongo(type: Exec) {
-    commandLine 'docker', 'stop', 'mongo_test'
+task runPostgres(type: Exec) {
+    commandLine 'docker', 'build', '-t', 'postgres-acme', 'db'
+    commandLine 'docker', 'run', '--name', 'acme-invoice-test', '-p', '5433:5432', '-e', 'POSTGRES_PASSWORD=password', '-d', 'postgres-acme'
+}
+
+task startPostgres(type: Exec, dependsOn: 'stopPosgres') {
+    commandLine 'docker', 'start', 'acme-invoice-test'
+}
+
+task stopPosgres(type: Exec) {
+    commandLine 'docker', 'stop', 'acme-invoice-test'
 }

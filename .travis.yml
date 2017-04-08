@@ -13,4 +13,6 @@ after_script:
   - docker stop acme-invoice-test
 
 script:
-  - ./gradlew test
+  - ./gradlew unitTests
+  - ./gradlew integrationTests
+  - ./gradlew endToEndTests
