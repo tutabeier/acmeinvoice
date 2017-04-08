@@ -6,6 +6,7 @@ import acmeinvoice.model.Customer;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.jayway.restassured.RestAssured;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Value;
@@ -61,6 +62,7 @@ public class CustomerEndToEnd {
     }
 
     @Test
+    @Ignore(value = "Flaky test")
     public void shouldSaveAndFetchCustomer() throws JsonProcessingException {
         given()
             .body(toJson(customerOne))
