@@ -12,8 +12,12 @@ before_script:
   - apt-get update
   - apt-get install -y oracle-java8-installer
 
+after_script:
+  - docker stop acme-invoice-test
+
 test:
   script:
+    - docker stop acme-invoice-test
     - docker build -t postgres-acme db
-    - docker run -p 5433:5432 -e POSTGRES_PASSWORD=vandebron -d postgres-acme
+    - docker --name acme-invoice-test run -p 5433:5432 -e POSTGRES_PASSWORD=vandebron -d postgres-acme
     - ./gradlew test
