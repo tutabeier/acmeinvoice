@@ -12,8 +12,11 @@ public class InvoiceConversionService {
     }
 
     public static InvoiceResponse convert(Invoice invoice) {
-        return new InvoiceResponse(invoice.getCustomer().getId(), invoice.getAddress().getId(), invoice.getId(),
-                invoice.getInvoiceType(), invoice.getInvoiceTypeLocalized(), invoice.getInvoiceDate(), invoice.getPaymentDueDate(),
-                invoice.getInvoiceNumber(), invoice.getStartDate(), invoice.getEndDate(), invoice.getAmount(), invoice.getVatAmount());
+        InvoiceResponse invoiceResponse = new InvoiceResponse(
+                invoice.getCustomer().getId(), invoice.getAddress().getId(), invoice.getId(),
+                invoice.getInvoiceType(), invoice.getInvoiceTypeLocalized(), invoice.getInvoiceDate(),
+                invoice.getPaymentDueDate(), invoice.getInvoiceNumber(), invoice.getStartDate(),
+                invoice.getEndDate(), invoice.getAmount(), invoice.getVatAmount());
+        return invoiceResponse;
     }
 }

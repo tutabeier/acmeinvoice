@@ -50,7 +50,32 @@ public class InvoiceControllerTest {
 
     @Test
     public void shouldFindAllInvoicesByCustomer() throws Exception {
-        when(service.findBy(01L, 02L)).thenReturn(newArrayList(invoiceResponseOne, invoiceResponseTwo));
+        when(service.findBy(01L, null, null, null)).thenReturn(newArrayList(invoiceResponseOne, invoiceResponseTwo));
+
+        mockMvc.perform(get("/v1.0/invoices/?customerId=01")
+                .contentType(APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].customerId", is(01)))
+                .andExpect(jsonPath("$[0].addressId", is(02)))
+                .andExpect(jsonPath("$[0].invoiceId", is(03)))
+                .andExpect(jsonPath("$[0].invoiceType", is("AdvancePayment")))
+                .andExpect(jsonPath("$[0].invoiceTypeLocalized", is("Voorschot")))
+                .andExpect(jsonPath("$[0].invoiceNumber", is("157005888")))
+                .andExpect(jsonPath("$[0].periodDescription", is("March 2015")))
+                .andExpect(jsonPath("$[0].totalAmount", is(200.0)))
+                .andExpect(jsonPath("$[1].customerId", is(01)))
+                .andExpect(jsonPath("$[1].addressId", is(02)))
+                .andExpect(jsonPath("$[1].invoiceId", is(04)))
+                .andExpect(jsonPath("$[1].invoiceType", is("ShopPurchase")))
+                .andExpect(jsonPath("$[1].invoiceTypeLocalized", is("Winkel aankoop")))
+                .andExpect(jsonPath("$[1].invoiceNumber", is("1429564")))
+                .andExpect(jsonPath("$[1].periodDescription", is("December 2014")))
+                .andExpect(jsonPath("$[1].totalAmount", is(200.0)));
+    }
+
+    @Test
+    public void shouldFindAllInvoicesByCustomerIdAndAddressId() throws Exception {
+        when(service.findBy(01L, 02L, null, null)).thenReturn(newArrayList(invoiceResponseOne, invoiceResponseTwo));
 
         mockMvc.perform(get("/v1.0/invoices/?customerId=01&addressId=02")
                 .contentType(APPLICATION_JSON))

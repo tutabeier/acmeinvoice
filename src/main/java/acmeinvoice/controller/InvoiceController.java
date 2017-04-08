@@ -25,8 +25,10 @@ public class InvoiceController {
 
     @RequestMapping(method = GET)
     public ResponseEntity findBy(@RequestParam(required = false) Long customerId,
-                                 @RequestParam(required = false) Long addressId) {
-        List<InvoiceResponse> invoices = service.findBy(customerId, addressId);
+                                 @RequestParam(required = false) Long addressId,
+                                 @RequestParam(required = false) String filter,
+                                 @RequestParam(required = false) Integer month) {
+        List<InvoiceResponse> invoices = service.findBy(customerId, addressId, filter, month);
         return new ResponseEntity(invoices, OK);
     }
 
