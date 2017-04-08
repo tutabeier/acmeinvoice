@@ -6,7 +6,7 @@ services:
     ports:
       - "5432:5432"
     environment:
-      - POSTGRES_PASSWORD=vandebron
+      - POSTGRES_PASSWORD=password
 
   deploy:
     container_name: tomcat
