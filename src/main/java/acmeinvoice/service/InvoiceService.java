@@ -40,6 +40,10 @@ public class InvoiceService {
     public List<InvoiceResponse> findBy(Long customerId, Long addressId, String invoiceType, Integer month) {
         List<Invoice> invoices = newArrayList();
 
+        /*
+            TODO: I'm not happy with the logic below. I've tried to use Query by Examples with pure JPA with no luck.
+            Still need to look further and refactor the code.
+         */
         if (customerId != null && invoiceType != null && month != null) {
             Map<String, String> invoiceTypeS = of("shop", "ShopPurchase", "payment", "AdvancePayment");
             String value = invoiceTypeS.get(invoiceType);
