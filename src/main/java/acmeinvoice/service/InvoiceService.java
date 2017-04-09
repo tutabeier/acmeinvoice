@@ -13,6 +13,11 @@ import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.List;
@@ -36,9 +41,22 @@ public class InvoiceService {
     private CustomerRepository customerRepository;
     @Autowired
     private AddressRepository addressRepository;
+    @Autowired
+    private EntityManager entityManager;
 
     public List<InvoiceResponse> findBy(Long customerId, Long addressId, String invoiceType, Integer month) {
         List<Invoice> invoices = newArrayList();
+        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+        CriteriaQuery query = builder.createQuery(Invoice.class);
+        Root invoice = query.from(Invoice.class);
+        CriteriaQuery select = query.select(invoice)
+                .where(builder.equal(invoice.get("customer.id"), customerId))
+                .where(builder.equal(invoice.get("address.id"), addressId))
+                .where(builder.equal(invoice.get("invoiceType"), invoiceType))
+                .where(builder.like(invoice.get("periodDescription"), of(month).name()));
+        TypedQuery typedQuery = entityManager.createQuery(select);
+        List<Invoice> results = typedQuery.getResultList();
+
 
         /*
             TODO: I'm not happy with the logic below. I've tried to use Query by Examples with pure JPA with no luck.

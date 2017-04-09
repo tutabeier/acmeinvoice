@@ -7,6 +7,7 @@ import acmeinvoice.model.Invoice;
 import acmeinvoice.repository.AddressRepository;
 import acmeinvoice.repository.CustomerRepository;
 import acmeinvoice.repository.InvoiceRepository;
+import acmeinvoice.repository.InvoiceRepositoryTwo;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,6 +32,8 @@ public class InvoiceRepositoryTest {
 
     @Autowired
     private InvoiceRepository repository;
+    @Autowired
+    private InvoiceRepositoryTwo repositoryTwo;
     @Autowired
     private CustomerRepository customerRepository;
     @Autowired
@@ -73,14 +76,16 @@ public class InvoiceRepositoryTest {
     public void findByCustomerId() throws Exception {
         Invoice savedInvoiceOne = repository.save(invoiceOne);
         Invoice savedInvoiceTwo = repository.save(invoiceTwo);
-        List<Invoice> invoices = repository.findByCustomerId(savedInvoiceOne.getCustomer().getId());
+        List<Invoice> invoices = repositoryTwo.findBy(savedInvoiceOne.getCustomer().getId(), null, null, null);
         assertThat(invoices, containsInAnyOrder(savedInvoiceOne, savedInvoiceTwo));
     }
 
     @Test
     public void findByCustomerIdAndAddressId() throws Exception {
         Invoice savedInvoice = repository.save(invoiceOne);
-        List<Invoice> invoices = repository.findByCustomerIdAndAddressId(savedInvoice.getCustomer().getId(), savedInvoice.getAddress().getId());
+
+        List<Invoice> invoices = repositoryTwo.findBy(savedInvoice.getCustomer().getId(), savedInvoice.getAddress().getId(), null, null);
+
         assertThat(invoices, contains(savedInvoice));
     }
 
@@ -89,7 +94,7 @@ public class InvoiceRepositoryTest {
         Invoice savedInvoiceOne = repository.save(invoiceOne);
         Invoice savedInvoiceTwo = repository.save(invoiceTwo);
 
-        List<Invoice> invoices = repository.findByCustomerIdAndMonth(customerOne.getId(), "MARCH");
+        List<Invoice> invoices = repositoryTwo.findBy(customerOne.getId(), null, null, 03);
 
         assertThat(invoices, containsInAnyOrder(savedInvoiceOne, savedInvoiceTwo));
     }
@@ -98,7 +103,7 @@ public class InvoiceRepositoryTest {
     public void shouldFindByCustomerIdAndInvoiceTypeAndMonth() throws Exception {
         Invoice savedInvoiceTwo = repository.save(invoiceTwo);
 
-        List<Invoice> invoices = repository.findByCustomerIdAndInvoiceTypeAndMonth(customerOne.getId(), "ShopPurchase", "MARCH");
+        List <Invoice> invoices = repositoryTwo.findBy(customerOne.getId(), null, "ShopPurchase", 03);
 
         assertThat(invoices, containsInAnyOrder(savedInvoiceTwo));
         assertThat(invoices.size(), is(1));
