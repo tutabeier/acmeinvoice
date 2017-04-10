@@ -1,0 +1,17 @@
+{
+  "customerId":1,
+  "addressId":2,
+  "invoiceId":0,
+  "id":null,
+  "invoiceType":"AdvancePayment",
+  "invoiceTypeLocalized":"Voorschot",
+  "invoiceDate":"2015-02-13",
+  "paymentDueDate":"2015-02-20",
+  "invoiceNumber":"010101",
+  "startDate":"2015-03-01",
+  "endDate":"2015-04-01",
+  "periodDescription":"March 2015",
+  "amount":165.29,
+  "vatAmount":34.71,
+  "totalAmount":200.0
+}

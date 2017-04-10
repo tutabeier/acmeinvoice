@@ -1,0 +1,17 @@
+{
+  "customerId":4,
+  "addressId":2,
+  "invoiceId":0,
+  "id":null,
+  "invoiceType":"ShopPurchase",
+  "invoiceTypeLocalized":"Voorschot",
+  "invoiceDate":"2014-11-13",
+  "paymentDueDate":"2014-11-20",
+  "invoiceNumber":"040404",
+  "startDate":"2014-12-01",
+  "endDate":"2015-01-01",
+  "periodDescription":"December 2014",
+  "amount":165.29,
+  "vatAmount":34.71,
+  "totalAmount":200.0
+}

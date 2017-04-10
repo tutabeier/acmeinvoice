@@ -3,13 +3,35 @@
 
 Build history in [Travis CI](https://travis-ci.org/tutabeier/acmeinvoice/).
 
-## Running the application
+## Setting up
 
-From the project root folder:
+### Requirements:
+- Java 8
+- Docker
+- Git
 
+### Running the application
+
+- `git clone git@github.com:tutabeier/acmeinvoice.git acme-invoice`
+- `acme-invoice`
 - `docker build -t postgres-acme db`
 - `docker run --name acme-invoice -p 5432:5432 -e POSTGRES_PASSWORD=password -d postgres-acme`
 - `./gradlew bootRun`
+
+#### Setting up data:
+The application provides three endpoints: `/customers`, `/address` and `/invoices`.
+You can populate the database using these three endpois or a shell script to do.
+After the application is up and running, you can populate the database via Rest API:
+- `cd setup/`
+- `./setupData.sh`
+
+For the sake of comprehension, the data used in `setupData.sh` is the same used in the `InvoiceEndToEnd.class`.
+The filters work together, so you can use one, two, three or four.
+Examples:
+- [http://localhost:9000/v1.0/invoices/?customerId=1&filter=shop&month=12](http://localhost:9000/v1.0/invoices/?customerId=1&filter=shop&month=12)
+- [http://localhost:9000/v1.0/invoices/?customerId=1&month=3](http://localhost:9000/v1.0/invoices/?customerId=1&month=3)
+- [http://localhost:9000/v1.0/invoices/?customerId=4](http://localhost:9000/v1.0/invoices/?customerId=4)
+- [http://localhost:9000/v1.0/invoices/?customerId=4&filter=shop](http://localhost:9000/v1.0/invoices/?customerId=4&filter=shop)
 
 ## Running tests and generating reports
 

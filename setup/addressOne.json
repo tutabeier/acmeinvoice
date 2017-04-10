@@ -1,0 +1,9 @@
+{
+  "city":"Porto Alegre",
+  "state":"Rio Grande do Sul",
+  "country":"Brazil",
+  "customer":{
+    "id":1,
+    "name":"Person One"
+  }
+}
