@@ -12,7 +12,7 @@ Build history in [Travis CI](https://travis-ci.org/tutabeier/acmeinvoice/).
 
 ### Running the application
 
-- `git clone git@github.com:tutabeier/acmeinvoice.git acme-invoice`
+- `git clone https://github.com/tutabeier/acmeinvoice.git acme-invoice`
 - `cd acme-invoice`
 
 You can simply run `./go.sh`, which will run:
