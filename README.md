@@ -1,4 +1,7 @@
+## Continuous Integration
 [![Build Status](https://travis-ci.org/tutabeier/acmeinvoice.svg?branch=master)](https://travis-ci.org/tutabeier/acmeinvoice)
+
+Build history in [Travis CI](https://travis-ci.org/tutabeier/acmeinvoice/).
 
 ## Running the application
 
