@@ -4,7 +4,7 @@ import acmeinvoice.Application;
 import acmeinvoice.model.Address;
 import acmeinvoice.model.Customer;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.jayway.restassured.RestAssured;
+import io.restassured.RestAssured;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -16,10 +16,10 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static acmeinvoice.common.JsonUtil.toJson;
-import static com.jayway.restassured.RestAssured.given;
-import static com.jayway.restassured.RestAssured.when;
-import static com.jayway.restassured.http.ContentType.JSON;
-import static org.assertj.core.util.Lists.newArrayList;
+import static acmeinvoice.model.Address.builder;
+import static io.restassured.RestAssured.given;
+import static io.restassured.RestAssured.when;
+import static io.restassured.http.ContentType.JSON;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.DEFINED_PORT;
 import static org.springframework.http.HttpStatus.CREATED;
@@ -41,24 +41,29 @@ public class CustomerEndToEnd {
 
         customerOne = new Customer();
         customerOne.setName("Person One");
-        Address addressOne = new Address();
-        addressOne.setCity("Porto Alegre");
-        addressOne.setState("Rio Grande do Sul");
-        addressOne.setCountry("Brazil");
-        Address addressTwo = new Address();
-        addressTwo.setCity("São Paulo");
-        addressTwo.setState("São Paulo");
-        addressTwo.setCountry("Brazil");
-        addressTwo.setCustomer(customerOne);
+        Address addressOne = builder()
+                .city("Porto Alegre")
+                .state("Rio Grande do Sul")
+                .country("Brazil")
+                .customer(customerOne)
+                .build();
+        Address addressTwo = builder()
+                .city("São Paulo")
+                .state("São Paulo")
+                .country("Brazil")
+                .customer(customerOne)
+                .build();
 
 
         customerTwo = new Customer();
         customerTwo.setName("Person Two");
-        Address addressThree = new Address();
-        addressThree.setCity("Rio de Janeiro");
-        addressThree.setState("Rio de Janeiro");
-        addressThree.setCountry("Brazil");
-        addressThree.setCustomer(customerTwo);
+
+        Address addressThree = builder()
+                .city("Rio de Janeiro")
+                .state("Rio de Janeiro")
+                .country("Brazil")
+                .customer(customerTwo)
+                .build();
     }
 
     @Test

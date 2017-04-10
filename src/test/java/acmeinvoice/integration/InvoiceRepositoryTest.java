@@ -7,7 +7,7 @@ import acmeinvoice.model.Invoice;
 import acmeinvoice.repository.AddressRepository;
 import acmeinvoice.repository.CustomerRepository;
 import acmeinvoice.repository.InvoiceRepository;
-import acmeinvoice.repository.InvoiceRepositoryTwo;
+import acmeinvoice.repository.InvoiceRepositoryImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,10 +18,12 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.List;
 
+import static acmeinvoice.model.Address.builder;
 import static java.time.LocalDate.parse;
 import static org.assertj.core.util.Lists.newArrayList;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
 
@@ -32,8 +34,6 @@ public class InvoiceRepositoryTest {
 
     @Autowired
     private InvoiceRepository repository;
-    @Autowired
-    private InvoiceRepositoryTwo repositoryTwo;
     @Autowired
     private CustomerRepository customerRepository;
     @Autowired
@@ -76,7 +76,9 @@ public class InvoiceRepositoryTest {
     public void findByCustomerId() throws Exception {
         Invoice savedInvoiceOne = repository.save(invoiceOne);
         Invoice savedInvoiceTwo = repository.save(invoiceTwo);
-        List<Invoice> invoices = repositoryTwo.findBy(savedInvoiceOne.getCustomer().getId(), null, null, null);
+
+        List<Invoice> invoices = repository.findBy(savedInvoiceOne.getCustomer().getId(), null, null, null);
+
         assertThat(invoices, containsInAnyOrder(savedInvoiceOne, savedInvoiceTwo));
     }
 
@@ -84,7 +86,7 @@ public class InvoiceRepositoryTest {
     public void findByCustomerIdAndAddressId() throws Exception {
         Invoice savedInvoice = repository.save(invoiceOne);
 
-        List<Invoice> invoices = repositoryTwo.findBy(savedInvoice.getCustomer().getId(), savedInvoice.getAddress().getId(), null, null);
+        List<Invoice> invoices = repository.findBy(savedInvoice.getCustomer().getId(), savedInvoice.getAddress().getId(), null, null);
 
         assertThat(invoices, contains(savedInvoice));
     }
@@ -94,7 +96,7 @@ public class InvoiceRepositoryTest {
         Invoice savedInvoiceOne = repository.save(invoiceOne);
         Invoice savedInvoiceTwo = repository.save(invoiceTwo);
 
-        List<Invoice> invoices = repositoryTwo.findBy(customerOne.getId(), null, null, 03);
+        List<Invoice> invoices = repository.findBy(customerOne.getId(), null, null, 03);
 
         assertThat(invoices, containsInAnyOrder(savedInvoiceOne, savedInvoiceTwo));
     }
@@ -103,9 +105,9 @@ public class InvoiceRepositoryTest {
     public void shouldFindByCustomerIdAndInvoiceTypeAndMonth() throws Exception {
         Invoice savedInvoiceTwo = repository.save(invoiceTwo);
 
-        List <Invoice> invoices = repositoryTwo.findBy(customerOne.getId(), null, "ShopPurchase", 03);
+        List<Invoice> invoices = repository.findBy(customerOne.getId(), null, "shop", 03);
 
-        assertThat(invoices, containsInAnyOrder(savedInvoiceTwo));
+        assertThat(invoices, contains(savedInvoiceTwo));
         assertThat(invoices.size(), is(1));
     }
 
@@ -116,23 +118,26 @@ public class InvoiceRepositoryTest {
         customerTwo = new Customer();
         customerTwo.setName("Person Two");
 
-        addressOne = new Address();
-        addressOne.setCity("Porto Alegre");
-        addressOne.setCountry("Brazil");
-        addressOne.setState("Rio Grande do Sul");
-        addressOne.setCustomer(customerOne);
+        addressOne = builder()
+                .city("Porto Alegre")
+                .state("Rio Grande do Sul")
+                .country("Brazil")
+                .customer(customerOne)
+                .build();
 
-        addressTwo = new Address();
-        addressTwo.setCity("São Paulo");
-        addressTwo.setCountry("São Paulo");
-        addressTwo.setState("Rio Grande do Sul");
-        addressTwo.setCustomer(customerOne);
+        addressTwo = builder()
+                .city("São Paulo")
+                .state("São Paulo")
+                .country("Brazil")
+                .customer(customerOne)
+                .build();
 
-        addressThree = new Address();
-        addressThree.setCity("São Paulo");
-        addressThree.setCountry("São Paulo");
-        addressThree.setState("Rio Grande do Sul");
-        addressThree.setCustomer(customerTwo);
+        addressThree = builder()
+                .city("São Paulo")
+                .state("São Paulo")
+                .country("Brazil")
+                .customer(customerTwo)
+                .build();
     }
 
 }

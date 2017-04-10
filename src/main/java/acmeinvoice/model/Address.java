@@ -1,23 +1,25 @@
 package acmeinvoice.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
-import static javax.persistence.CascadeType.ALL;
 import static javax.persistence.GenerationType.AUTO;
 
-@Data
 @Entity
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Address {
     @Id
     @GeneratedValue(strategy = AUTO)
@@ -27,6 +29,5 @@ public class Address {
     private String country;
     @ManyToOne
     @JoinColumn(name = "customer_id")
-    @JsonIgnore
     private Customer customer;
 }

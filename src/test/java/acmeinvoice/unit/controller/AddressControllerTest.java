@@ -19,6 +19,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static acmeinvoice.common.JsonUtil.toJson;
+import static acmeinvoice.model.Address.builder;
 import static com.google.common.collect.Lists.newArrayList;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
@@ -50,6 +51,14 @@ public class AddressControllerTest {
     }
 
     @Test
+    public void shouldSaveAddress() throws Exception {
+        when(repository.save(addressOne)).thenReturn(addressOne);
+        mockMvc.perform(post("/v1.0/address").content(toJson(addressOne)).contentType(APPLICATION_JSON))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("city", is("Porto Alegre")));
+    }
+
+    @Test
     public void shouldFindAllAddresses() throws Exception {
         when(repository.findAll()).thenReturn(newArrayList(addressOne, addressTwo));
 
@@ -68,16 +77,18 @@ public class AddressControllerTest {
         customer = new Customer();
         customer.setName("Lucas Falk Beier");
 
-        addressOne = new Address();
-        addressOne.setCustomer(customer);
-        addressOne.setCity("Porto Alegre");
-        addressOne.setState("Rio Grande do Sul");
-        addressOne.setCountry("Brazil");
+        addressOne = builder()
+                .city("Porto Alegre")
+                .state("Rio Grande do Sul")
+                .country("Brazil")
+                .customer(customer)
+                .build();
 
-        addressTwo = new Address();
-        addressTwo.setCustomer(customer);
-        addressTwo.setCity("São Paulo");
-        addressTwo.setState("São Paulo");
-        addressTwo.setCountry("Brazil");
+        addressTwo = builder()
+                .city("São Paulo")
+                .state("São Paulo")
+                .country("Brazil")
+                .customer(customer)
+                .build();
     }
 }

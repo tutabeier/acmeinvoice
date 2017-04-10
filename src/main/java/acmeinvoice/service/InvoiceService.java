@@ -7,28 +7,14 @@ import acmeinvoice.model.InvoiceResponse;
 import acmeinvoice.repository.AddressRepository;
 import acmeinvoice.repository.CustomerRepository;
 import acmeinvoice.repository.InvoiceRepository;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Maps;
+import acmeinvoice.repository.InvoiceRepositoryImpl;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
-import java.time.LocalDate;
-import java.time.Month;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 import static acmeinvoice.service.InvoiceConversionService.convert;
-import static com.google.common.collect.ImmutableMap.of;
-import static com.google.common.collect.Lists.newArrayList;
-import static com.google.common.collect.Maps.newHashMap;
-import static java.time.Month.of;
 import static java.util.stream.Collectors.toList;
 
 @AllArgsConstructor
@@ -43,25 +29,7 @@ public class InvoiceService {
     private AddressRepository addressRepository;
 
     public List<InvoiceResponse> findBy(Long customerId, Long addressId, String invoiceType, Integer month) {
-        List<Invoice> invoices = newArrayList();
-
-        /*
-            TODO: I'm not happy with the logic below. I've tried to use Query by Examples with pure JPA with no luck.
-            Still need to look further and refactor the code.
-         */
-        if (customerId != null && invoiceType != null && month != null) {
-            Map<String, String> invoiceTypeS = of("shop", "ShopPurchase", "payment", "AdvancePayment");
-            String value = invoiceTypeS.get(invoiceType);
-            String monthName = of(month).name();
-            invoices = repository.findByCustomerIdAndInvoiceTypeAndMonth(customerId, value, monthName);
-        } else if (customerId != null && month != null) {
-            String monthName = of(month).name();
-            invoices = repository.findByCustomerIdAndMonth(customerId, monthName);
-        } else if (customerId != null && addressId != null) {
-            invoices = repository.findByCustomerIdAndAddressId(customerId, addressId);
-        } else if (customerId != null) {
-            invoices = repository.findByCustomerId(customerId);
-        }
+        List<Invoice> invoices = repository.findBy(customerId, addressId, invoiceType, month);
 
         List<InvoiceResponse> invoiceResponses = invoices.stream()
                 .map(InvoiceConversionService::convert)

@@ -7,17 +7,15 @@ import acmeinvoice.model.InvoiceResponse;
 import acmeinvoice.repository.AddressRepository;
 import acmeinvoice.repository.CustomerRepository;
 import acmeinvoice.repository.InvoiceRepository;
-import acmeinvoice.service.InvoiceConversionService;
+import acmeinvoice.repository.InvoiceRepositoryImpl;
 import acmeinvoice.service.InvoiceService;
-import org.assertj.core.util.Lists;
-import org.hamcrest.Matchers;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 
 import java.util.List;
 
+import static acmeinvoice.model.Address.builder;
 import static acmeinvoice.service.InvoiceConversionService.convert;
 import static java.time.LocalDate.parse;
 import static org.assertj.core.util.Lists.newArrayList;
@@ -48,12 +46,13 @@ public class InvoiceServiceTest {
         customer = new Customer();
         customer.setId(01L);
         customer.setName("Lucas Falk Beier");
-        addressOne = new Address();
-        addressOne.setId(01L);
-        addressOne.setCity("Porto Alegre");
-        addressOne.setState("Rio Grande do Sul");
-        addressOne.setCountry("Brazil");
-        addressOne.setCustomer(customer);
+        addressOne = builder()
+                .id(01L)
+                .city("Porto Alegre")
+                .state("Rio Grande do Sul")
+                .country("Brazil")
+                .customer(customer)
+                .build();
 
         invoiceOne = new Invoice("AdvancePayment", "Voorschot", parse("2015-02-13"), parse("2015-02-20"),
                 "157005888", parse("2015-03-01"), parse("2015-04-01"),  165.29F, 34.71F);
@@ -70,39 +69,45 @@ public class InvoiceServiceTest {
 
     @Test
     public void shouldFindByCustomerIdAndMonth() throws Exception {
-        // Invoices per month
-        when(repository.findByCustomerIdAndMonth(01L, "MARCH")).thenReturn(newArrayList(invoiceTwo));
+        when(repository.findBy(01L, null, null, 03)).thenReturn(newArrayList(invoiceTwo));
 
         List<InvoiceResponse> responses = service.findBy(01L, null, null, 03);
         InvoiceResponse expectedInvoice = convert(invoiceTwo);
 
-        verify(repository).findByCustomerIdAndMonth(01L, "MARCH");
+        verify(repository).findBy(01L, null, null, 03);
         assertThat(responses, containsInAnyOrder(expectedInvoice));
     }
 
     @Test
     public void shouldFindByCustomerIdAndInvoiceTypeAndMonth() throws Exception {
-        // Shop Invoices
-        when(repository.findByCustomerIdAndInvoiceTypeAndMonth(01L, "ShopPurchase", "MARCH")).thenReturn(newArrayList(invoiceTwo));
+        when(repository.findBy(01L, null, "shop", 03)).thenReturn(newArrayList(invoiceTwo));
 
         List<InvoiceResponse> responses = service.findBy(01L, null, "shop", 03);
         InvoiceResponse expectedInvoice = convert(invoiceTwo);
 
-        verify(repository).findByCustomerIdAndInvoiceTypeAndMonth(01L, "ShopPurchase", "MARCH");
+        verify(repository).findBy(01L, null, "shop", 03);
         assertThat(responses, containsInAnyOrder(expectedInvoice));
     }
 
     @Test
     public void shouldFindByCustomerId() throws Exception {
-        // Invoices history full
-        service.findBy(01L, null, null, null);
-        verify(repository).findByCustomerId(01L);
+        when(repository.findBy(01L, null, null, null)).thenReturn(newArrayList(invoiceOne));
+
+        List<InvoiceResponse> responses = service.findBy(01L, null, null, null);
+        InvoiceResponse expectedInvoice = convert(invoiceOne);
+
+        verify(repository).findBy(01L, null, null, null);
+        assertThat(responses, containsInAnyOrder(expectedInvoice));
     }
 
     @Test
     public void shouldFindByCustomerIdAndAddressId() throws Exception {
-        // Invoices history per address
-        service.findBy(01L, 0L, null, null);
-        verify(repository).findByCustomerIdAndAddressId(01, 0);
+        when(repository.findBy(01L, 01L, null, null)).thenReturn(newArrayList(invoiceOne));
+
+        List<InvoiceResponse> responses = service.findBy(01L, 01L, null, null);
+        InvoiceResponse expectedInvoice = convert(invoiceOne);
+
+        verify(repository).findBy(01L, 01L, null, null);
+        assertThat(responses, containsInAnyOrder(expectedInvoice));
     }
 }
