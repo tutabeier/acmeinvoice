@@ -13,7 +13,9 @@ Build history in [Travis CI](https://travis-ci.org/tutabeier/acmeinvoice/).
 ### Running the application
 
 - `git clone git@github.com:tutabeier/acmeinvoice.git acme-invoice`
-- `acme-invoice`
+- `cd acme-invoice`
+
+You can simply run `./go.sh`, which will run:
 - `docker build -t postgres-acme db`
 - `docker run --name acme-invoice -p 5432:5432 -e POSTGRES_PASSWORD=password -d postgres-acme`
 - `./gradlew bootRun`
