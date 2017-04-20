@@ -64,10 +64,7 @@ public class CustomerControllerTest {
     }
 
     private void setCustomers() {
-        customerOne = new Customer();
-        customerOne.setName("Person One");
-
-        customerTwo = new Customer();
-        customerTwo.setName("Person Two");
+        customerOne = Customer.builder().name("Person One").build();
+        customerTwo = Customer.builder().name("Person Two").build();
     }
 }

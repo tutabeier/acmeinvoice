@@ -39,8 +39,7 @@ public class CustomerEndToEnd {
     public void setUp() {
         RestAssured.port = serverPort;
 
-        customerOne = new Customer();
-        customerOne.setName("Person One");
+        customerOne = Customer.builder().name("Person One").build();
         Address addressOne = builder()
                 .city("Porto Alegre")
                 .state("Rio Grande do Sul")
@@ -55,8 +54,7 @@ public class CustomerEndToEnd {
                 .build();
 
 
-        customerTwo = new Customer();
-        customerTwo.setName("Person Two");
+        customerOne = Customer.builder().name("Person Two").build();
 
         Address addressThree = builder()
                 .city("Rio de Janeiro")

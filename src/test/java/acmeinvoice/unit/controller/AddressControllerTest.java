@@ -74,8 +74,7 @@ public class AddressControllerTest {
     }
 
     private void setAddressesResponses() {
-        customer = new Customer();
-        customer.setName("Lucas Falk Beier");
+        customer = Customer.builder().name("Lucas Falk Beier").build();
 
         addressOne = builder()
                 .city("Porto Alegre")

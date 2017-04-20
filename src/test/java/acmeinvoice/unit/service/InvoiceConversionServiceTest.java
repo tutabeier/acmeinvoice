@@ -22,9 +22,7 @@ public class InvoiceConversionServiceTest {
 
     @Before
     public void setUp() throws Exception {
-        customer = new Customer();
-        customer.setId(01L);
-        customer.setName("Customer One");
+        customer = Customer.builder().id(01L).name("Customer One").build();
 
         address = Address.builder()
                 .id(02L)
@@ -34,7 +32,7 @@ public class InvoiceConversionServiceTest {
                 .customer(customer)
                 .build();
 
-        invoice = new Invoice("AdvancePayment", "Voorschot", parse("2015-02-13"), parse("2015-02-20"), "010101",
+        invoice = new Invoice(03L, customer, address, "AdvancePayment", "Voorschot", parse("2015-02-13"), parse("2015-02-20"), "010101",
                 parse("2015-03-01"), parse("2015-04-01"), 165.29f,34.71f);
 
         invoiceResponse = new InvoiceResponse(customer.getId(), address.getId(), 03L, "AdvancePayment",
@@ -45,16 +43,15 @@ public class InvoiceConversionServiceTest {
     @Test
     public void shouldConvertFromInvoiceResponseToInvoice() {
         Invoice invoiceConverted = convert(invoiceResponse);
+        invoiceConverted.setCustomer(customer);
+        invoiceConverted.setAddress(address);
+        invoiceConverted.setId(03L);
 
         assertThat(invoiceConverted, equalTo(invoice));
     }
 
     @Test
     public void shouldConvertFromInvoiceToInvoiceResponse() throws Exception {
-        invoice.setId(03L);
-        invoice.setCustomer(customer);
-        invoice.setAddress(address);
-
         InvoiceResponse invoiceResponseConverted = convert(invoice);
 
         assertThat(invoiceResponseConverted, equalTo(invoiceResponse));

@@ -152,8 +152,7 @@ public class InvoiceEndToEnd {
     }
 
     private void setupCustomersAndAddresses() throws JsonProcessingException {
-        Customer customerOne = new Customer();
-        customerOne.setName("Person One");
+        Customer customerOne = Customer.builder().name("Person One").build();
         Address addressOne = builder()
                 .city("Porto Alegre")
                 .state("Rio Grande do Sul")
@@ -201,8 +200,7 @@ public class InvoiceEndToEnd {
                 extract().
                     path("id");
 
-        Customer customerTwo = new Customer();
-        customerTwo.setName("Person Two");
+        Customer customerTwo = Customer.builder().name("Person Two").build();
         Address addressThree = builder()
                 .city("Rio de Janeiro")
                 .state("Rio de Janeiro")

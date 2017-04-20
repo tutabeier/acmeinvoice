@@ -7,23 +7,25 @@ import acmeinvoice.model.Invoice;
 import acmeinvoice.repository.AddressRepository;
 import acmeinvoice.repository.CustomerRepository;
 import acmeinvoice.repository.InvoiceRepository;
-import acmeinvoice.repository.InvoiceRepositoryImpl;
+import com.google.common.collect.ImmutableMap;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.List;
+import java.util.Map;
 
 import static acmeinvoice.model.Address.builder;
 import static java.time.LocalDate.parse;
+import static java.time.Month.of;
 import static org.assertj.core.util.Lists.newArrayList;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
 
@@ -76,8 +78,9 @@ public class InvoiceRepositoryTest {
     public void findByCustomerId() throws Exception {
         Invoice savedInvoiceOne = repository.save(invoiceOne);
         Invoice savedInvoiceTwo = repository.save(invoiceTwo);
+        Example<Invoice> invoiceExample = createExampleInvoice(savedInvoiceOne.getCustomer().getId(), null, null, null);
 
-        List<Invoice> invoices = repository.findBy(savedInvoiceOne.getCustomer().getId(), null, null, null);
+        Iterable<Invoice> invoices = repository.findAll(invoiceExample);
 
         assertThat(invoices, containsInAnyOrder(savedInvoiceOne, savedInvoiceTwo));
     }
@@ -85,8 +88,9 @@ public class InvoiceRepositoryTest {
     @Test
     public void findByCustomerIdAndAddressId() throws Exception {
         Invoice savedInvoice = repository.save(invoiceOne);
+        Example<Invoice> invoiceExample = createExampleInvoice(savedInvoice.getCustomer().getId(), savedInvoice.getAddress().getId(), null, null);
 
-        List<Invoice> invoices = repository.findBy(savedInvoice.getCustomer().getId(), savedInvoice.getAddress().getId(), null, null);
+        Iterable<Invoice> invoices = repository.findAll(invoiceExample);
 
         assertThat(invoices, contains(savedInvoice));
     }
@@ -95,8 +99,9 @@ public class InvoiceRepositoryTest {
     public void shouldFindByCustomerIdAndMonth() throws Exception {
         Invoice savedInvoiceOne = repository.save(invoiceOne);
         Invoice savedInvoiceTwo = repository.save(invoiceTwo);
+        Example<Invoice> invoiceExample = createExampleInvoice(customerOne.getId(), null, null, 03);
 
-        List<Invoice> invoices = repository.findBy(customerOne.getId(), null, null, 03);
+        Iterable<Invoice> invoices = repository.findAll(invoiceExample);
 
         assertThat(invoices, containsInAnyOrder(savedInvoiceOne, savedInvoiceTwo));
     }
@@ -104,19 +109,18 @@ public class InvoiceRepositoryTest {
     @Test
     public void shouldFindByCustomerIdAndInvoiceTypeAndMonth() throws Exception {
         Invoice savedInvoiceTwo = repository.save(invoiceTwo);
+        Example<Invoice> invoiceExample = createExampleInvoice(customerOne.getId(), null, "shop", 03);
 
-        List<Invoice> invoices = repository.findBy(customerOne.getId(), null, "shop", 03);
+        Iterable<Invoice> invoices = repository.findAll(invoiceExample);
 
         assertThat(invoices, contains(savedInvoiceTwo));
-        assertThat(invoices.size(), is(1));
+//        int size = Iterators.size(invoices);
+//        assertThat(size, is(1));
     }
 
     private void setupCustomerAndAddress() {
-        customerOne = new Customer();
-        customerOne.setName("Person One");
-
-        customerTwo = new Customer();
-        customerTwo.setName("Person Two");
+        customerOne = Customer.builder().name("Person One").build();
+        customerTwo = Customer.builder().name("Person Two").build();
 
         addressOne = builder()
                 .city("Porto Alegre")
@@ -139,5 +143,29 @@ public class InvoiceRepositoryTest {
                 .customer(customerTwo)
                 .build();
     }
+
+    private Example<Invoice> createExampleInvoice(Long customerId, Long addressId, String invoiceType, Integer month) {
+        Customer customer = Customer.builder().id(customerId).build();
+        Address address = Address.builder().id(addressId).build();
+        Map<String, String> invoiceTypes = ImmutableMap.of("shop", "ShopPurchase", "payment", "AdvancePayment");
+        String type = invoiceTypes.get(invoiceType);
+        String monthDescription = null;
+        if (month != null) {
+            monthDescription = of(month).name().toLowerCase();
+        }
+
+        Invoice invoiceMatcher = Invoice.builder()
+                .customer(customer)
+                .address(address)
+                .periodDescription(monthDescription)
+                .invoiceType(type)
+                .build();
+        invoiceMatcher.setCustomer(customer);
+        invoiceMatcher.setAddress(address);
+        ExampleMatcher exampleMatcher = ExampleMatcher.matching()
+                .withMatcher("periodDescription", ExampleMatcher.GenericPropertyMatcher.of(ExampleMatcher.StringMatcher.CONTAINING).ignoreCase());
+        return Example.of(invoiceMatcher, exampleMatcher);
+    }
+
 
 }

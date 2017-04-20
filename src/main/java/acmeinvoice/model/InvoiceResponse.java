@@ -2,14 +2,16 @@ package acmeinvoice.model;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.Getter;
 
 import java.time.LocalDate;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY;
 
 @JsonAutoDetect(fieldVisibility = ANY)
-@Data
+@Getter
 @AllArgsConstructor
 public class InvoiceResponse extends Invoice {
     private long customerId;

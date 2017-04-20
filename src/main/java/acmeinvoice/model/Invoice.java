@@ -6,8 +6,13 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -21,22 +26,29 @@ import static java.time.format.DateTimeFormatter.ofPattern;
 import static java.util.Locale.getDefault;
 import static javax.persistence.GenerationType.AUTO;
 
-@Data
 @Entity
+@Getter
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode
+@ToString
 public class Invoice {
     @Id
     @GeneratedValue(strategy = AUTO)
+    @Setter
     private Long id;
 
     @JoinColumn(name = "customer_id")
     @JsonIgnore
     @OneToOne(targetEntity = Customer.class)
+    @Setter
     private Customer customer;
 
     @JoinColumn(name = "address_id")
     @JsonIgnore
     @OneToOne(targetEntity = Address.class)
+    @Setter
     private Address address;
 
     protected String invoiceType;
@@ -67,13 +79,20 @@ public class Invoice {
 
     protected String periodDescription;
 
-    protected float amount;
+    protected Float amount;
 
-    protected float vatAmount;
+    protected Float vatAmount;
 
-    protected float totalAmount;
+    protected Float totalAmount;
 
-    public Invoice(String invoiceType, String invoiceTypeLocalized, LocalDate invoiceDate, LocalDate paymentDueDate, String invoiceNumber, LocalDate startDate, LocalDate endDate, float amount, float vatAmount) {
+    public Invoice(Long id, Customer customer, Address address, String invoiceType, String invoiceTypeLocalized, LocalDate invoiceDate, LocalDate paymentDueDate, String invoiceNumber, LocalDate startDate, LocalDate endDate, Float amount, Float vatAmount) {
+        this(invoiceType, invoiceTypeLocalized, invoiceDate, paymentDueDate, invoiceNumber, startDate, endDate, amount, vatAmount);
+        this.id = id;
+        this.customer = customer;
+        this.address = address;
+    }
+
+    public Invoice(String invoiceType, String invoiceTypeLocalized, LocalDate invoiceDate, LocalDate paymentDueDate, String invoiceNumber, LocalDate startDate, LocalDate endDate, Float amount, Float vatAmount) {
         this.invoiceType = invoiceType;
         this.invoiceTypeLocalized = invoiceTypeLocalized;
         this.invoiceDate = invoiceDate;
