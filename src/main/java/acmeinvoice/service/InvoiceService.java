@@ -60,12 +60,15 @@ public class InvoiceService {
     private Example<Invoice> getInvoiceExample(Long customerId, Long addressId, String invoiceType, Integer month) {
         Customer customer = Customer.builder().id(customerId).build();
         Address address = Address.builder().id(addressId).build();
+
         Map<String, String> invoiceTypes = ImmutableMap.of("shop", "ShopPurchase", "payment", "AdvancePayment");
         String type = invoiceTypes.get(invoiceType);
+
         String monthDescription = null;
         if (month != null) {
             monthDescription = of(month).name().toLowerCase();
         }
+
         Invoice invoice = Invoice.builder()
                 .customer(customer)
                 .address(address)
