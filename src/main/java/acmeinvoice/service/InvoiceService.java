@@ -36,25 +36,7 @@ public class InvoiceService {
     private AddressRepository addressRepository;
 
     public List<InvoiceResponse> findBy(Long customerId, Long addressId, String invoiceType, Integer month) {
-        Customer customer = Customer.builder().id(customerId).build();
-        Address address = Address.builder().id(addressId).build();
-        Map<String, String> invoiceTypes = ImmutableMap.of("shop", "ShopPurchase", "payment", "AdvancePayment");
-        String type = invoiceTypes.get(invoiceType);
-        String monthDescription = null;
-        if (month != null) {
-            monthDescription = of(month).name().toLowerCase();
-        }
-        Invoice invoice = Invoice.builder()
-                .customer(customer)
-                .address(address)
-                .invoiceType(type)
-                .periodDescription(monthDescription)
-                .build();
-
-        ExampleMatcher exampleMatcher = ExampleMatcher.matching()
-                .withMatcher("periodDescription", of(CONTAINING).ignoreCase());
-
-        Example<Invoice> invoiceExample = Example.of(invoice, exampleMatcher);
+        Example<Invoice> invoiceExample = getInvoiceExample(customerId, addressId, invoiceType, month);
 
         Iterable<Invoice> invoices = repository.findAll(invoiceExample);
 
@@ -73,5 +55,27 @@ public class InvoiceService {
         invoiceToBeSaved.setAddress(address);
         Invoice savedInvoice = repository.save(invoiceToBeSaved);
         return convert(savedInvoice);
+    }
+
+    private Example<Invoice> getInvoiceExample(Long customerId, Long addressId, String invoiceType, Integer month) {
+        Customer customer = Customer.builder().id(customerId).build();
+        Address address = Address.builder().id(addressId).build();
+        Map<String, String> invoiceTypes = ImmutableMap.of("shop", "ShopPurchase", "payment", "AdvancePayment");
+        String type = invoiceTypes.get(invoiceType);
+        String monthDescription = null;
+        if (month != null) {
+            monthDescription = of(month).name().toLowerCase();
+        }
+        Invoice invoice = Invoice.builder()
+                .customer(customer)
+                .address(address)
+                .invoiceType(type)
+                .periodDescription(monthDescription)
+                .build();
+
+        ExampleMatcher exampleMatcher = ExampleMatcher.matching()
+                .withMatcher("periodDescription", of(CONTAINING).ignoreCase());
+
+        return Example.of(invoice, exampleMatcher);
     }
 }
